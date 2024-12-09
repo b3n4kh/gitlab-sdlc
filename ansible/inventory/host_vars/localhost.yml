@@ -1,2 +1,16 @@
 ---
-gitlab_repo_url: "http://packages.gitlab.com/gitlab/gitlab-ce/debian/"
+gitlab_domain: "gitlab.internal.domain"
+gitlab_edition: "gitlab-ee"
+
+gitlab_repo_url: "http://packages.gitlab.com/gitlab/{{ gitlab_edition }}/debian/"
+gitlab_create_self_signed_cert: true
+gitlab_self_signed_cert_subj: "/C=AT/L=Vienna/O=UC/CN={{ gitlab_domain }}"
+
+gitlab_ldap_enabled: false
+gitlab_ldap_host: "example.com"
+gitlab_ldap_port: "389"
+gitlab_ldap_uid: "sAMAccountName"
+gitlab_ldap_method: "plain"
+gitlab_ldap_bind_dn: "CN=Username,CN=Users,DC=example,DC=com"
+gitlab_ldap_password: "password"
+gitlab_ldap_base: "DC=example,DC=com"
