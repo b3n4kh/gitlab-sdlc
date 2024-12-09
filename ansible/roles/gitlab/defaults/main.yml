@@ -22,11 +22,12 @@ gitlab_ldap_enabled: false
 gitlab_ldap_host: "example.com"
 gitlab_ldap_port: "389"
 gitlab_ldap_uid: "sAMAccountName"
-gitlab_ldap_method: "plain"
+gitlab_ldap_encryption: "plain"
 gitlab_ldap_bind_dn: "CN=Username,CN=Users,DC=example,DC=com"
 gitlab_ldap_password: "password"
 gitlab_ldap_base: "DC=example,DC=com"
 gitlab_ldap_active_directory: false
+gitlab_ldap_user_filer: ""
 
 # SMTP Configuration
 gitlab_smtp_enable: false
