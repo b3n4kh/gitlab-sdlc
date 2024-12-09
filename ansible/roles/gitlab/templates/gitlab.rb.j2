@@ -11,6 +11,13 @@ gitlab_rails['gitlab_email_display_name'] = "{{ gitlab_email_display_name }}"
 gitlab_rails['gitlab_email_reply_to'] = "{{ gitlab_email_reply_to }}"
 {% endif %}
 
+{% if gitlab_http_proxy %}
+gitlab_rails['env'] = {
+    "http_proxy" => '{{ gitlab_http_proxy }}',
+    "https_proxy" => '{{ gitlab_https_proxy }}',
+}
+{% endif %}
+
 # Default Theme
 gitlab_rails['gitlab_default_theme'] = "{{ gitlab_default_theme }}"
 
