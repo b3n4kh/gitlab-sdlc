@@ -1,5 +1,7 @@
 - hosts: gitlab
   become: true
+  pre_tasks:
+    - name: Include Vars
+      ansible.builtin.include_vars: vars.yml
   roles:
     - gitlab
-
