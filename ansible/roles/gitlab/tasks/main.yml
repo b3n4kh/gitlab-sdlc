@@ -25,8 +25,14 @@
 - name: Download GitLab GPG key
   ansible.builtin.get_url:
     url: "{{ gitlab_gpg_key_url }}"
-    dest: "{{ gitlab_gpg_key_path }}"
+    dest: "/tmp/gitlab-gpg-key.asc"
     mode: "0644"
+
+- name: Dearmor GitLab GPG key into keyring path
+  ansible.builtin.command:
+    cmd: "gpg --dearmor -o {{ gitlab_gpg_key_path }} /tmp/gitlab-gpg-key.asc"
+  args:
+    creates: "{{ gitlab_gpg_key_path }}"
 
 - name: Add GitLab CE repository
   apt_repository:
