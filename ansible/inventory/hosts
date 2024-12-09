@@ -1,4 +1,4 @@
 [gitlab]
-#localhost ansible_connection=local
-b3n.eu ansible_port=2222 ansible_user=vagrant
+localhost ansible_connection=local
+#b3n.eu ansible_port=2222 ansible_user=vagrant
 
