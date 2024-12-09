@@ -28,6 +28,7 @@ gitlab_ldap_password: "password"
 gitlab_ldap_base: "DC=example,DC=com"
 gitlab_ldap_active_directory: false
 gitlab_ldap_user_filter: ""
+gitlab_ldap_group_base: ""
 gitlab_ldap_label: "LDAP"
 gitlab_ldap_verify_certificates: true
 
