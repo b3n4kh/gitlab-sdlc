@@ -28,6 +28,7 @@ gitlab_ldap_password: "password"
 gitlab_ldap_base: "DC=example,DC=com"
 gitlab_ldap_active_directory: false
 gitlab_ldap_user_filter: ""
+gitlab_ldap_label: "LDAP"
 
 # SMTP Configuration
 gitlab_smtp_enable: false
