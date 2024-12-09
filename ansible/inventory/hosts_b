@@ -1,0 +1,2 @@
+[gitlab]
+b3n.eu ansible_port=2222 ansible_user=vagrant
