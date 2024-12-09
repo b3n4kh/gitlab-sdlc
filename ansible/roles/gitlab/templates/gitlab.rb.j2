@@ -13,8 +13,24 @@ gitlab_rails['gitlab_email_reply_to'] = "{{ gitlab_email_reply_to }}"
 
 {% if gitlab_http_proxy %}
 gitlab_rails['env'] = {
-    "http_proxy" => '{{ gitlab_http_proxy }}',
-    "https_proxy" => '{{ gitlab_https_proxy }}',
+  "http_proxy" => '{{ gitlab_http_proxy }}',
+  "https_proxy" => '{{ gitlab_https_proxy | default(gitlab_http_proxy) }}'
+}
+gitaly['env'] = {
+  "http_proxy" => '{{ gitlab_http_proxy }}',
+  "https_proxy" => '{{ gitlab_https_proxy | default(gitlab_http_proxy) }}'
+}
+gitlab_workhorse['env'] = {
+  "http_proxy" => '{{ gitlab_http_proxy }}',
+  "https_proxy" => '{{ gitlab_https_proxy | default(gitlab_http_proxy) }}'
+}
+gitlab_pages['env'] = {
+  "http_proxy" => '{{ gitlab_http_proxy }}',
+  "https_proxy" => '{{ gitlab_https_proxy | default(gitlab_http_proxy) }}'
+}
+registry['env'] = {
+  "http_proxy" => '{{ gitlab_http_proxy }}',
+  "https_proxy" => '{{ gitlab_https_proxy | default(gitlab_http_proxy) }}'
 }
 {% endif %}
 
