@@ -1,2 +1,2 @@
 ---
-repo_url: "http://packages.gitlab.com/gitlab/gitlab-ce/debian/"
+gitlab_repo_url: "http://packages.gitlab.com/gitlab/gitlab-ce/debian/"
