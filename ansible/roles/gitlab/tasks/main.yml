@@ -32,6 +32,7 @@
   apt_repository:
     repo: "deb [signed-by={{ gitlab_gpg_key_path }}] {{ gitlab_repo_url }} {{ ansible_distribution_release }} main"
     state: present
+    update_cache: false
     filename: "gitlab_gitlab-ce"
 
 - name: Define the Gitlab package name.
