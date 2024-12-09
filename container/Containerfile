@@ -1,0 +1,38 @@
+FROM debian:latest
+
+# Install openssh-server
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    systemd systemd-sysv && \
+    rm -rf /lib/systemd/system/multi-user.target.wants/* ; \
+    rm -rf /etc/systemd/system/*.wants/* ; \
+    rm -rf /lib/systemd/system/local-fs.target.wants/* ; \
+    rm -rf /lib/systemd/system/sockets.target.wants/*udev* ; \
+    rm -rf /lib/systemd/system/sockets.target.wants/*initctl* ; \
+    rm -rf /lib/systemd/system/sysinit.target.wants/systemd-tmpfiles-setup* ; \
+    rm -rf /lib/systemd/system/systemd-update-utmp* ; \
+    mkdir -p /var/run/sshd /run/systemd /run/lock
+
+
+RUN apt-get install -y --no-install-recommends curl ca-certificates openssh-server logrotate git vim python3
+
+ENV container=docker
+ENV SYSTEMD_OPTS=systemd.unified_cgroup_hierarchy=1
+STOPSIGNAL SIGRTMIN+3
+
+ARG GITHUB_USER=b3n4kh
+RUN mkdir -p /root/.ssh && \
+    curl -sSL https://github.com/${GITHUB_USER}.keys -o /root/.ssh/authorized_keys && \
+    chmod 600 /root/.ssh/authorized_keys && \
+    chown root:root /root/.ssh/authorized_keys
+
+# Update sshd configuration
+RUN sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config
+
+# Expose SSH port
+EXPOSE 22
+
+VOLUME [ "/sys/fs/cgroup" ]
+
+CMD ["/lib/systemd/systemd"]
+
