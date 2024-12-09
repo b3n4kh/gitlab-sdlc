@@ -24,13 +24,13 @@
 
 - name: Download GitLab GPG key
   ansible.builtin.get_url:
-    url: "{{ gpg_key_url }}"
-    dest: "{{ gpg_key_path }}"
+    url: "{{ gitlab_gpg_key_url }}"
+    dest: "{{ gitlab_gpg_key_path }}"
     mode: "0644"
 
 - name: Add GitLab CE repository
   apt_repository:
-    repo: "deb [signed-by={{ gpg_key_path }}] {{ repo_url }} {{ ansible_distribution_release }} main"
+    repo: "deb [signed-by={{ gitlab_gpg_key_path }}] {{ gitlab_repo_url }} {{ ansible_distribution_release }} main"
     state: present
     filename: "gitlab_gitlab-ce"
 

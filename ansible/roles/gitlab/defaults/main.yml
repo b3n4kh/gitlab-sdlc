@@ -81,3 +81,7 @@ gitlab_letsencrypt_auto_renew_hour: 1
 gitlab_letsencrypt_auto_renew_minute: 30
 gitlab_letsencrypt_auto_renew_day_of_month: "*/7"
 gitlab_letsencrypt_auto_renew: true
+
+gitlab_gpg_key_url: "https://packages.gitlab.com/gitlab/gitlab-ce/gpgkey"
+gitlab_gpg_key_path: "/usr/share/keyrings/gitlab_gitlab-ce-archive-keyring.gpg"
+gitlab_repo_url: "https://packages.gitlab.com/gitlab/gitlab-ce/debian/"
