@@ -50,7 +50,8 @@ gitlab_rails['ldap_servers'] = {
     'password'   => '{{ gitlab_ldap_password }}',
     'active_directory' => {{ gitlab_ldap_active_directory | lower }},
     'user_filter'      => '{{ gitlab_ldap_user_filter }}',
-    'allow_username_or_email_login' => true
+    'allow_username_or_email_login' => true,
+    'verify_certificates' => {{ gitlab_ldap_verify_certificates | lower }}
   }
 }
 {% endif %}
