@@ -8,12 +8,6 @@ gitlab_ssl_certificate: "/etc/gitlab/ssl/gitlab-p-01.pem"
 gitlab_ssl_certificate_key: "/etc/gitlab/ssl/gitlab-p-01.key"
 
 
-gitlab_ldap_enabled: false
-gitlab_ldap_host: "example.com"
-gitlab_ldap_port: "389"
+gitlab_ldap_enabled: true
 gitlab_ldap_uid: "sAMAccountName"
-gitlab_ldap_method: "plain"
-gitlab_ldap_bind_dn: "CN=Username,CN=Users,DC=example,DC=com"
-gitlab_ldap_password: "password"
-gitlab_ldap_base: "DC=example,DC=com"
 gitlab_ldap_active_directory: true
