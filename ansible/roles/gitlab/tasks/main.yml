@@ -22,17 +22,17 @@
     state: present
   when: ansible_os_family == 'Debian'
 
-- name: Download GitLab repository installation script.
-  get_url:
-    url: "{{ gitlab_repository_installation_script_url }}"
-    dest: /tmp/gitlab_install_repository.sh
-    validate_certs: "{{ gitlab_download_validate_certs }}"
-  when: not gitlab_file.stat.exists
+- name: Download GitLab GPG key
+  ansible.builtin.get_url:
+    url: "{{ gpg_key_url }}"
+    dest: "{{ gpg_key_path }}"
+    mode: "0644"
 
-- name: Install GitLab repository.
-  command: bash /tmp/gitlab_install_repository.sh
-  register: output
-  when: not gitlab_file.stat.exists
+- name: Add GitLab CE repository
+  apt_repository:
+    repo: "deb [signed-by={{ gpg_key_path }}] {{ repo_url }} {{ ansible_distribution_release }} main"
+    state: present
+    filename: "gitlab_gitlab-ce"
 
 - name: Define the Gitlab package name.
   set_fact:
