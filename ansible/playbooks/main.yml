@@ -1,5 +1,7 @@
 - hosts: gitlab
   become: true
+  vars:
+    repo_url: "http://packages.gitlab.com/gitlab/gitlab-ce/debian/"
   roles:
     - gitlab
 
