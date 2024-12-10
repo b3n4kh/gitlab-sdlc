@@ -4,7 +4,7 @@ gitlab_domain: gitlab
 gitlab_external_url: "https://{{ gitlab_domain }}/"
 gitlab_git_data_dir: "/var/opt/gitlab/git-data"
 gitlab_edition: "gitlab-ce"
-gitlab_version: ''
+gitlab_version: ""
 gitlab_backup_path: "/var/opt/gitlab/backups"
 gitlab_config_template: "gitlab.rb.j2"
 
@@ -51,7 +51,7 @@ gitlab_nginx_ssl_verify_client: ""
 gitlab_nginx_ssl_client_certificate: ""
 
 # Probably best to leave this as the default, unless doing testing.
-gitlab_restart_handler_failed_when: 'gitlab_restart.rc != 0'
+gitlab_restart_handler_failed_when: "gitlab_restart.rc != 0"
 
 # Dependencies.
 gitlab_dependencies:
@@ -65,7 +65,7 @@ gitlab_dependencies:
 gitlab_time_zone: "UTC"
 gitlab_backup_keep_time: "604800"
 gitlab_download_validate_certs: true
-gitlab_default_theme: '2'
+gitlab_default_theme: "2"
 
 # Email configuration.
 gitlab_email_enabled: false
@@ -86,6 +86,9 @@ gitlab_letsencrypt_auto_renew_hour: 1
 gitlab_letsencrypt_auto_renew_minute: 30
 gitlab_letsencrypt_auto_renew_day_of_month: "*/7"
 gitlab_letsencrypt_auto_renew: true
+
+gitlab_http_proxy: ""
+gitlab_https_proxy: ""
 
 gitlab_gpg_key_url: "https://packages.gitlab.com/gitlab/gitlab-ce/gpgkey"
 gitlab_gpg_key_path: "/usr/share/keyrings/gitlab_gitlab-ce-archive-keyring.gpg"

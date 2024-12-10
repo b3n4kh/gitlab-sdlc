@@ -1,23 +1,24 @@
 ---
 - name: Include OS-specific variables.
-  include_vars: "{{ ansible_os_family }}.yml"
-
+  ansible.builtin.include_vars: "{{ ansible_os_family }}.yml"
 - name: Check if GitLab configuration file already exists.
-  stat: path=/etc/gitlab/gitlab.rb
+  ansible.builtin.stat:
+    path: /etc/gitlab/gitlab.rb
   register: gitlab_config_file
 
 - name: Check if GitLab is already installed.
-  stat: path=/usr/bin/gitlab-ctl
+  ansible.builtin.stat:
+    path: /usr/bin/gitlab-ctl
   register: gitlab_file
 
 # Install GitLab and its dependencies.
 - name: Install GitLab dependencies.
-  package:
+  ansible.builtin.package:
     name: "{{ gitlab_dependencies }}"
     state: present
 
 - name: Install GitLab dependencies (Debian).
-  apt:
+  ansible.builtin.apt:
     name: gnupg2
     state: present
   when: ansible_os_family == 'Debian'
@@ -35,18 +36,18 @@
     creates: "{{ gitlab_gpg_key_path }}"
 
 - name: Add GitLab CE repository
-  apt_repository:
+  ansible.builtin.apt_repository:
     repo: "deb [signed-by={{ gitlab_gpg_key_path }}] {{ gitlab_repo_url }} {{ ansible_distribution_release }} main"
     state: present
     filename: "gitlab_gitlab-ce"
 
 - name: Define the Gitlab package name.
-  set_fact:
+  ansible.builtin.set_fact:
     gitlab_package_name: "{{ gitlab_edition }}{{ gitlab_package_version_separator }}{{ gitlab_version }}"
   when: gitlab_version | default(false)
 
 - name: Install GitLab
-  package:
+  ansible.builtin.package:
     name: "{{ gitlab_package_name | default(gitlab_edition) }}"
     state: present
   async: 300
@@ -56,32 +57,45 @@
 # Start and configure GitLab. Sometimes the first run fails, but after that,
 # restarts fix problems, so ignore failures on this run.
 - name: Reconfigure GitLab (first run).
-  command: >
-    gitlab-ctl reconfigure
-    creates=/var/opt/gitlab/bootstrapped
+  ansible.builtin.command:
+    creates: "/var/opt/gitlab/bootstrapped\n"
+    cmd: gitlab-ctl reconfigure
   failed_when: false
 
 - name: Create GitLab SSL configuration folder.
-  file:
+  ansible.builtin.file:
     path: /etc/gitlab/ssl
     state: directory
     owner: root
     group: root
-    mode: 0700
+    mode: "0700"
   when: gitlab_create_self_signed_cert
 
 - name: Create self-signed certificate.
-  command: >
-    openssl req -new -nodes -x509 -subj "{{ gitlab_self_signed_cert_subj }}"
-    -days 3650 -keyout {{ gitlab_ssl_certificate_key }} -out {{ gitlab_ssl_certificate }} -extensions v3_ca
-    creates={{ gitlab_ssl_certificate }}
+  ansible.builtin.command:
+    creates: "{{"
+    cmd: openssl req -new -nodes -x509 -subj "{{ gitlab_self_signed_cert_subj }}" -days 3650 -keyout {{ gitlab_ssl_certificate_key }} -out {{ gitlab_ssl_certificate
+      }} -extensions v3_ca gitlab_ssl_certificate }}
   when: gitlab_create_self_signed_cert
 
 - name: Copy GitLab configuration file.
-  template:
+  ansible.builtin.template:
     src: "{{ gitlab_config_template }}"
     dest: /etc/gitlab/gitlab.rb
     owner: root
     group: root
-    mode: 0600
+    mode: "0600"
   notify: restart gitlab
+
+- name: Create a cron job for GitLab backup
+  ansible.builtin.cron:
+    name: "GitLab daily backup"
+    minute: "0"
+    hour: "6"
+    job: "/usr/bin/gitlab-backup > /var/log/gitlab/gitlab-backup.log 2>&1"
+    state: present
+
+- name: Toggle Gitlab Sign-Up
+  ansible.builtin.command: >
+    gitlab-rails runner "ApplicationSetting.current.update(signup_enabled: {{ gitlab_signup_enabled | lower }})"
+  when: gitlab_signup_enabled is defined

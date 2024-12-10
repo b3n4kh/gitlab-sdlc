@@ -15,3 +15,4 @@ gitlab_ldap_verify_certificates: false
 
 #gitlab_http_proxy: "http://"
 #gitlab_https_proxy: "http://"
+gitlab_signup_enabled: false
