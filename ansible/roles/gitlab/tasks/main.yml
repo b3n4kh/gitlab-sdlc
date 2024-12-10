@@ -58,7 +58,7 @@
 # restarts fix problems, so ignore failures on this run.
 - name: Reconfigure GitLab (first run).
   ansible.builtin.command:
-    creates: "/var/opt/gitlab/bootstrapped\n"
+    creates: "/var/opt/gitlab/bootstrapped"
     cmd: gitlab-ctl reconfigure
   failed_when: false
 
@@ -73,9 +73,12 @@
 
 - name: Create self-signed certificate.
   ansible.builtin.command:
-    creates: "{{"
-    cmd: openssl req -new -nodes -x509 -subj "{{ gitlab_self_signed_cert_subj }}" -days 3650 -keyout {{ gitlab_ssl_certificate_key }} -out {{ gitlab_ssl_certificate
-      }} -extensions v3_ca gitlab_ssl_certificate }}
+    creates: "{{ gitlab_ssl_certificate }}"
+    cmd: >
+      openssl req -new -nodes -x509 -subj "{{ gitlab_self_signed_cert_subj }}" -days 3650
+      -keyout {{ gitlab_ssl_certificate_key }}
+      -out {{ gitlab_ssl_certificate }}
+      -extensions v3_ca
   when: gitlab_create_self_signed_cert
 
 - name: Copy GitLab configuration file.
@@ -90,12 +93,18 @@
 - name: Create a cron job for GitLab backup
   ansible.builtin.cron:
     name: "GitLab daily backup"
+    user: root
     minute: "0"
     hour: "6"
     job: "/usr/bin/gitlab-backup > /var/log/gitlab/gitlab-backup.log 2>&1"
+    cron_file: "/etc/cron.d/gitlab-backup"
     state: present
 
 - name: Toggle Gitlab Sign-Up
-  ansible.builtin.command: >
-    gitlab-rails runner "ApplicationSetting.current.update(signup_enabled: {{ gitlab_signup_enabled | lower }})"
+  ansible.builtin.shell: >
+    gitlab-rails runner "ApplicationSetting.current.update(signup_enabled: {{ gitlab_signup_enabled | lower }})" >
+    /etc/gitlab/.signup_{{ gitlab_signup_enabled | lower }}
   when: gitlab_signup_enabled is defined
+  args:
+    creates: "/etc/gitlab/.signup_{{ gitlab_signup_enabled | lower }}"
+  notify: restart gitlab
