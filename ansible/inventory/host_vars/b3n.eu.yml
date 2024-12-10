@@ -2,14 +2,17 @@
 gitlab_domain: "localhost"
 gitlab_signup_enabled: false
 
-gitlab_smtp_enable: false
-gitlab_smtp_address: "127.0.0.1"
+gitlab_smtp_enable: true
+gitlab_smtp_address: "b3n.eu"
 gitlab_smtp_port: "1025"
-gitlab_smtp_user_name: "smtp user"
-gitlab_smtp_password: "smtp password"
-gitlab_smtp_domain: "example.com"
+gitlab_smtp_user_name: "test"
+gitlab_smtp_password: "test"
+gitlab_smtp_domain: "b3n.eu"
 gitlab_smtp_authentication: "login"
 gitlab_smtp_enable_starttls_auto: true
 gitlab_smtp_tls: false
 gitlab_smtp_openssl_verify_mode: "none"
+
+gitlab_email_enabled: true
+gitlab_email_from: "test@gitlab.com"
 

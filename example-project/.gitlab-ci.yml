@@ -1,0 +1,49 @@
+stages:
+  - test
+  - build
+
+variables:
+  DOCKER_BUILDKIT: 1
+  DOCKER_DRIVER: overlay2
+
+pytest:
+  stage: test
+  image: ghcr.io/astral-sh/uv
+  script:
+    - echo "Installing dependencies..."
+    - uv sync --all-extras --dev
+    - echo "Running unit tests..."
+    - uv run pytest
+  artifacts:
+    paths:
+      - .pytest_cache
+
+build_docker:
+  stage: build
+  image: docker:latest
+  services:
+    - docker:dind
+  only:
+    - /^v\d+\.\d+\.\d+$/ # Match tags
+  dependencies:
+    - pytest
+  before_script:
+    - echo "$CI_JOB_TOKEN" | docker login -u gitlab-ci-token --password-stdin $CI_REGISTRY
+  script:
+    - docker buildx create --use
+    - export IMAGE_TAG="registry.gitlab.com/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME:${CI_COMMIT_TAG}"
+    - echo "Building and pushing Docker image..."
+    - docker buildx build --file Containerfile --push --tag $IMAGE_TAG --cache-from=type=registry,ref=$IMAGE_TAG --cache-to=type=registry,mode=max
+
+build_wheel:
+  stage: build
+  image: ghcr.io/astral-sh/uv
+  only:
+    - /^v\d+\.\d+\.\d+$/ # Match tags
+  dependencies:
+    - pytest
+  script:
+    - echo "Building Python wheel..."
+    - uv build
+    - echo "Uploading to PyPI..."
+    - uv publish
