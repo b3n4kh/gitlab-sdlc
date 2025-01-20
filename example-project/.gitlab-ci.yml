@@ -1,22 +1,30 @@
+include:
+  - template: Jobs/SAST.gitlab-ci.yml
+  - template: Jobs/Dependency-Scanning.gitlab-ci.yml
+  - template: Jobs/Container-Scanning.gitlab-ci.yml
+
 stages:
   - test
+  - security_scan
   - build
 
 variables:
   DOCKER_BUILDKIT: 1
   DOCKER_DRIVER: overlay2
+  IMAGE_TAG: "registry.gitlab.com/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME:${CI_COMMIT_TAG}"
+  CS_IMAGE: $IMAGE_TAG
+  
 
 pytest:
   stage: test
   image: ghcr.io/astral-sh/uv
   script:
-    - echo "Installing dependencies..."
     - uv sync --all-extras --dev
-    - echo "Running unit tests..."
-    - uv run pytest
+    - uv run pytest --junitxml=test-results.xml
   artifacts:
-    paths:
-      - .pytest_cache
+    reports:
+      junit: test-results.xml
+    when: always
 
 build_docker:
   stage: build
@@ -24,26 +32,22 @@ build_docker:
   services:
     - docker:dind
   only:
-    - /^v\d+\.\d+\.\d+$/ # Match tags
+    - /^v\d+\.\d+\.\d+$/
   dependencies:
     - pytest
   before_script:
     - echo "$CI_JOB_TOKEN" | docker login -u gitlab-ci-token --password-stdin $CI_REGISTRY
   script:
     - docker buildx create --use
-    - export IMAGE_TAG="registry.gitlab.com/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME:${CI_COMMIT_TAG}"
-    - echo "Building and pushing Docker image..."
     - docker buildx build --file Containerfile --push --tag $IMAGE_TAG --cache-from=type=registry,ref=$IMAGE_TAG --cache-to=type=registry,mode=max
 
 build_wheel:
   stage: build
   image: ghcr.io/astral-sh/uv
   only:
-    - /^v\d+\.\d+\.\d+$/ # Match tags
+    - /^v\d+\.\d+\.\d+$/
   dependencies:
     - pytest
   script:
-    - echo "Building Python wheel..."
     - uv build
-    - echo "Uploading to PyPI..."
-    - uv publish
+    - uv publish --repository-url $CI_REGISTRY --username $CI_REGISTRY_USER --password $CI_REGISTRY_PASSWORD

@@ -3,7 +3,7 @@ name = "exmaple-project"
 description = "Example Project"
 readme = "README.md"
 license = { file = "LICENSE.md" }
-maintainers = [{ email = "benjamin.akhras@ait.ac.at" }]
+maintainers = [{ email = "b@akhras.at" }]
 
 classifiers = [
     "Programming Language :: Python",
